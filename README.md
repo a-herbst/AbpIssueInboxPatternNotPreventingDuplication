@@ -1,8 +1,27 @@
-# AbpIssue
+# AbpIssue for InboxPattern
 
 ## About this solution
 
-This is a minimalist, non-layered startup solution with the ABP Framework. All the fundamental ABP modules are already installed. 
+This solution helps to demonstrate an issue when the inbox pattern does not prevent an event to be processed
+multiple times in all cases.
+
+The solution causes some traffic on the rabbitmq by
+
+1) sending N PingEtos
+2) On reception of the N th PingEto) sends N PongEtos
+3) On reception of the N th PongEto) sends 2*N PingEtos
+
+Each event will be send with an unique SequenceNumber.
+
+If you kill the RabbitMQ connection right at the time when the inbox events are processed
+it can happen that somehow the PingEventHandler or the PongEventHandler receives a Eto
+with the same Sequence number twice.
+
+You can set breakpoints in class AbpIssue.EventHandler.AbstractEventHandler in
+- method SequenceNumberDuplicationCheck() line 28
+- method SequenceNumberDuplicationCheck() line 36
+
+to check when the event duplication happens.
 
 ### Pre-requirements
 
