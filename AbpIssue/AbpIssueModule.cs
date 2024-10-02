@@ -51,6 +51,11 @@ using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.EventBus.RabbitMq;
+using Volo.Abp.DistributedLocking;
+using Medallion.Threading.SqlServer;
+using Medallion.Threading;
+using Volo.Abp.EventBus.Distributed;
+using Volo.Abp.EntityFrameworkCore.DistributedEvents;
 
 namespace AbpIssue;
 
@@ -105,6 +110,7 @@ namespace AbpIssue;
     typeof(AbpSettingManagementWebModule)
 )]
 [DependsOn(typeof(AbpEventBusRabbitMqModule))]
+    [DependsOn(typeof(AbpDistributedLockingModule))]
     public class AbpIssueModule : AbpModule
 {
     /* Single point to enable/disable multi-tenancy */
@@ -167,6 +173,7 @@ namespace AbpIssue;
         ConfigureVirtualFiles(hostingEnvironment);
         ConfigureLocalization();
         ConfigureEfCore(context);
+        ConfigureDistributedEventBus(context);
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)
@@ -321,6 +328,24 @@ namespace AbpIssue;
             });
         });
 
+    }
+
+    private void ConfigureDistributedEventBus(ServiceConfigurationContext context)
+    {
+        var configuration = context.Services.GetConfiguration();
+
+        Configure<AbpDistributedEventBusOptions>(options =>
+        {
+            options.Inboxes.Configure(config =>
+            {
+                config.UseDbContext<AbpIssueDbContext>();
+            });
+        });
+
+        context.Services.AddSingleton<IDistributedLockProvider>(sp =>
+        {
+            return new SqlDistributedSynchronizationProvider(configuration.GetConnectionString("Default")!);
+        });
     }
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)

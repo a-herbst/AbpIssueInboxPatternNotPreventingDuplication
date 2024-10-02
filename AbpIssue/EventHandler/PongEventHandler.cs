@@ -9,7 +9,7 @@ public class PongEventHandler
         IDistributedEventHandler<PongEto>,
         ISingletonDependency
 {
-    public const uint MaxPackageSize = 8192u;
+    public const uint MaxPackageSize = 2048u;
 
     readonly IDistributedEventBus _distributedEventBus;
 
