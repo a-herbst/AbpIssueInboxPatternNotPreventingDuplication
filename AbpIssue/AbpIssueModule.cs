@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using AbpIssue.Data;
@@ -50,6 +50,7 @@ using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
+using Volo.Abp.EventBus.RabbitMq;
 
 namespace AbpIssue;
 
@@ -103,7 +104,8 @@ namespace AbpIssue;
     typeof(AbpSettingManagementHttpApiModule),
     typeof(AbpSettingManagementWebModule)
 )]
-public class AbpIssueModule : AbpModule
+[DependsOn(typeof(AbpEventBusRabbitMqModule))]
+    public class AbpIssueModule : AbpModule
 {
     /* Single point to enable/disable multi-tenancy */
     public const bool IsMultiTenant = true;
