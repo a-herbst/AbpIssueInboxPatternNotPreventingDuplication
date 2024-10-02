@@ -6,7 +6,6 @@ using AbpIssue.Localization;
 using AbpIssue.Menus;
 using OpenIddict.Validation.AspNetCore;
 using Volo.Abp;
-using Volo.Abp.Uow;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Mvc;
@@ -337,6 +336,14 @@ namespace AbpIssue;
         Configure<AbpDistributedEventBusOptions>(options =>
         {
             options.Inboxes.Configure(config =>
+            {
+                config.UseDbContext<AbpIssueDbContext>();
+            });
+        });
+
+        Configure<AbpDistributedEventBusOptions>(options =>
+        {
+            options.Outboxes.Configure(config =>
             {
                 config.UseDbContext<AbpIssueDbContext>();
             });
