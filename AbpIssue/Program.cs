@@ -1,4 +1,5 @@
 using AbpIssue.Data;
+using AbpIssue.Services;
 using Serilog;
 using Serilog.Events;
 using Volo.Abp.Data;
@@ -50,6 +51,10 @@ public class Program
             }
 
             Log.Information("Starting AbpIssue.");
+
+            Log.Information("Sending intial PingEvent to DistributedEventBus.");
+            await app.Services.GetRequiredService<EndlessPingAppService>().StartPing();
+
             await app.RunAsync();
             return 0;
         }

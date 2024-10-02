@@ -1,5 +1,7 @@
-﻿using AbpIssue.Localization;
+﻿using AbpIssue.Events;
+using AbpIssue.Localization;
 using Volo.Abp.Application.Services;
+using Volo.Abp.EventBus.Distributed;
 
 namespace AbpIssue.Services;
 
