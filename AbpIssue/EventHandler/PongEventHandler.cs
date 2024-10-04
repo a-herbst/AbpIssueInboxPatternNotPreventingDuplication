@@ -25,6 +25,8 @@ public class PongEventHandler
 
     public async Task HandleEventAsync(PongEto eventData)
     {
+        _logger.LogDebug($"Received {eventData}");
+
         SequenceNumberDuplicationCheck(eventData.SequenceNumber);
 
         // at the end of each package of pong events produce a package of ping events with doubled size.

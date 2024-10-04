@@ -11,5 +11,10 @@
         /// Size of the package events.
         /// </summary>
         public required uint PackageSize { get; set; }
+
+        public override string? ToString()
+        {
+            return $"PongEto {{ SequenceNumber: {SequenceNumber}, PackageIndex: {PackageIndex}, PackageSize: {PackageSize} }}";
+        }
     }
 }
