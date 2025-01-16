@@ -49,7 +49,6 @@ using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.Validation.Localization;
 using Volo.Abp.VirtualFileSystem;
-using Volo.Abp.EventBus.RabbitMq;
 using Volo.Abp.DistributedLocking;
 using Medallion.Threading.SqlServer;
 using Medallion.Threading;
@@ -108,7 +107,7 @@ namespace AbpIssue;
     typeof(AbpSettingManagementHttpApiModule),
     typeof(AbpSettingManagementWebModule)
 )]
-[DependsOn(typeof(AbpEventBusRabbitMqModule))]
+[DependsOn(typeof(AbpIssue.EventBus.RabbitMq.AbpEventBusRabbitMqModule))]
     [DependsOn(typeof(AbpDistributedLockingModule))]
     public class AbpIssueModule : AbpModule
 {
