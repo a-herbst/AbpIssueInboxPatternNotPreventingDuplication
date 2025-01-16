@@ -101,24 +101,27 @@ public class RabbitMqDistributedEventBus : DistributedEventBusBase, IRabbitMqDis
 
     private async Task ProcessEventAsync(IModel channel, BasicDeliverEventArgs ea)
     {
-        var eventName = ea.RoutingKey;
-        var eventType = EventTypes.GetOrDefault(eventName);
-        if (eventType == null)
+        lock (this)
         {
-            return;
-        }
+            var eventName = ea.RoutingKey;
+            var eventType = EventTypes.GetOrDefault(eventName);
+            if (eventType == null)
+            {
+                return;
+            }
 
-        var eventData = Serializer.Deserialize(ea.Body.ToArray(), eventType);
+            var eventData = Serializer.Deserialize(ea.Body.ToArray(), eventType);
 
-        var correlationId = ea.BasicProperties.CorrelationId;
-        if (await AddToInboxAsync(ea.BasicProperties.MessageId, eventName, eventType, eventData, correlationId))
-        {
-            return;
-        }
+            var correlationId = ea.BasicProperties.CorrelationId;
+            if (AddToInboxAsync(ea.BasicProperties.MessageId, eventName, eventType, eventData, correlationId).Result)
+            {
+                return;
+            }
 
-        using (CorrelationIdProvider.Change(correlationId))
-        {
-            await TriggerHandlersDirectAsync(eventType, eventData);
+            using (CorrelationIdProvider.Change(correlationId))
+            {
+                TriggerHandlersDirectAsync(eventType, eventData).Wait();
+            }
         }
     }
 
